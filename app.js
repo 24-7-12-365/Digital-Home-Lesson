@@ -1,42 +1,38 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// Firebase Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyArvx56ucEnH-JdQkuLNoeWB-jJ-IRYvMM",
   authDomain: "digital-62aa4.firebaseapp.com",
   databaseURL: "https://digital-62aa4-default-rtdb.firebaseio.com",
   projectId: "digital-62aa4",
-  storageBucket: "digital-62aa4.firebasestorage.app",
+  storageBucket: "digital-62aa4.appspot.com",
   messagingSenderId: "1046952526852",
-  appId: "1:1046952526852:web:1c4454fe3bdb78153fa151",
-  measurementId: "G-WKSW7MGL2F"
+  appId: "1:1046952526852:web:1c4454fe3bdb78153fa151"
 };
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
+// ================= SIGN UP =================
+window.signUp = async function () {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
+  const role = document.getElementById("role").value;
+  const name = document.getElementById("name").value;
+  const userClass = document.getElementById("class").value;
+  const subjects = document.getElementById("subjects").value.split(",");
 
-firebase.initializeApp(firebaseConfig);
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-// SIGNUP
-async function signup() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const role = document.getElementById('role').value;
-  const userClass = document.getElementById('class').value;
-  const subjects = document.getElementById('subjects').value.split(',');
-
-  const user = await auth.createUserWithEmailAndPassword(email, password);
-
-  await db.collection("users").doc(user.user.uid).set({
+  await set(ref(db, "users/" + userCred.user.uid), {
+    name,
     email,
     role,
     class: userClass,
@@ -45,135 +41,143 @@ async function signup() {
   });
 
   alert("Signup successful. Await admin approval.");
-}
+};
 
-// LOGIN
-async function login() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
+// ================= LOGIN =================
+window.login = async function () {
+  const email = loginEmail.value;
+  const password = loginPassword.value;
 
-  const userCred = await auth.signInWithEmailAndPassword(email, password);
+  const userCred = await signInWithEmailAndPassword(auth, email, password);
   const uid = userCred.user.uid;
 
-  const doc = await db.collection("users").doc(uid).get();
-  const data = doc.data();
+  const snapshot = await get(ref(db, "users/" + uid));
+  const user = snapshot.val();
 
-  if (!data.approved) {
-    alert("Await admin approval");
+  if (!user.approved) {
+    alert("Await admin approval.");
     return;
   }
 
-  showDashboard(data.role, uid);
-}
+  showDashboard(user);
+};
 
-// SHOW DASHBOARD
-function showDashboard(role, uid) {
-  document.getElementById('auth').classList.add('hidden');
+// ================= DASHBOARD SWITCH =================
+function showDashboard(user) {
+  document.getElementById("auth-section").classList.add("hidden");
 
-  if (role === "admin") {
-    document.getElementById('adminDashboard').classList.remove('hidden');
-    loadPendingUsers();
-  }
-  if (role === "teacher") {
-    document.getElementById('teacherDashboard').classList.remove('hidden');
-  }
-  if (role === "student") {
-    document.getElementById('studentDashboard').classList.remove('hidden');
+  if (user.role === "admin") {
+    adminDashboard();
+  } else if (user.role === "teacher") {
+    teacherDashboard(user);
+  } else {
+    studentDashboard(user);
   }
 }
 
-// ADMIN: LOAD PENDING USERS
-async function loadPendingUsers() {
-  const snapshot = await db.collection("users")
-    .where("approved", "==", false)
-    .get();
+// ================= ADMIN =================
+async function adminDashboard() {
+  document.getElementById("admin-dashboard").classList.remove("hidden");
 
-  let html = "";
-  snapshot.forEach(doc => {
-    const user = doc.data();
-    html += `
-      <div>
-        ${user.email} - ${user.role} - ${user.class}
-        <button onclick="approveUser('${doc.id}')">Approve</button>
-      </div>
-    `;
+  const snapshot = await get(ref(db, "users"));
+  const users = snapshot.val();
+
+  let html = "<h3>Pending Users</h3>";
+
+  for (let uid in users) {
+    if (!users[uid].approved) {
+      html += `
+        <div>
+          ${users[uid].name} - ${users[uid].role}
+          <button onclick="approveUser('${uid}')">Approve</button>
+        </div>`;
+    }
+  }
+
+  document.getElementById("pending-users").innerHTML = html;
+}
+
+window.approveUser = async function (uid) {
+  await update(ref(db, "users/" + uid), { approved: true });
+  alert("Approved");
+  location.reload();
+};
+
+// ================= TEACHER =================
+function teacherDashboard(user) {
+  document.getElementById("teacher-dashboard").classList.remove("hidden");
+
+  const subjectSelect = document.getElementById("teacher-subject");
+  user.subjects.forEach(sub => {
+    let opt = document.createElement("option");
+    opt.value = sub;
+    opt.innerText = sub;
+    subjectSelect.appendChild(opt);
   });
-
-  document.getElementById('pendingUsers').innerHTML = html;
 }
 
-async function approveUser(uid) {
-  await db.collection("users").doc(uid).update({ approved: true });
-  loadPendingUsers();
-}
+window.saveLesson = async function () {
+  const subject = document.getElementById("teacher-subject").value;
+  const week = document.getElementById("teacher-week").value;
 
-// TEACHER: UPLOAD LESSON
-async function uploadLesson() {
-  const subject = document.getElementById('teacherSubject').value;
-  const week = document.getElementById('week').value;
-  const note = document.getElementById('lessonNote').value;
-  const video = document.getElementById('videoLink').value;
-  const obj = document.getElementById('objectiveQ').value;
-  const theory = document.getElementById('theoryQ').value;
+  const note = document.getElementById("lesson-note").value;
+  const video = document.getElementById("video-link").value;
+  const obj = document.getElementById("obj-questions").value;
+  const theory = document.getElementById("theory-questions").value;
 
-  await db.collection("lessons").add({
-    subject,
-    week,
+  await set(ref(db, `lessons/${subject}/${week}`), {
     note,
     video,
-    objective: JSON.parse(obj),
+    obj,
     theory
   });
 
-  alert("Lesson uploaded");
-}
+  alert("Lesson Saved");
+};
 
-// STUDENT: LOAD LESSON
-async function loadLesson() {
-  const subject = document.getElementById('studentSubject').value;
-  const week = document.getElementById('studentWeek').value;
+// ================= STUDENT =================
+function studentDashboard(user) {
+  document.getElementById("student-dashboard").classList.remove("hidden");
 
-  const snapshot = await db.collection("lessons")
-    .where("subject", "==", subject)
-    .where("week", "==", week)
-    .get();
+  const subjectSelect = document.getElementById("student-subject");
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
-
-    document.getElementById('lessonDisplay').innerHTML = `
-      <h3>${subject} - Week ${week}</h3>
-      <p>${data.note}</p>
-      <iframe src="${data.video}" autoplay></iframe>
-    `;
-
-    loadCBT(data);
+  user.subjects.forEach(sub => {
+    let opt = document.createElement("option");
+    opt.value = sub;
+    opt.innerText = sub;
+    subjectSelect.appendChild(opt);
   });
 }
 
-// CBT
-function loadCBT(data) {
-  let html = "";
+window.loadLesson = async function () {
+  const subject = studentSubject.value;
+  const week = studentWeek.value;
 
-  data.objective.forEach((q, i) => {
-    html += `<p>${q.question}</p>`;
-    q.options.forEach(opt => {
-      html += `<input type="radio" name="q${i}" value="${opt}">${opt}<br>`;
-    });
-  });
+  const snapshot = await get(ref(db, `lessons/${subject}/${week}`));
+  const lesson = snapshot.val();
 
-  html += `<button onclick="submitCBT()">Submit</button>`;
-  document.getElementById('cbtSection').innerHTML = html;
-}
+  document.getElementById("lesson-display").innerHTML = lesson.note;
 
-// STUDENT QUESTION
-async function askQuestion() {
-  const text = document.getElementById('studentQuestion').value;
+  document.getElementById("video-display").innerHTML = `
+    <iframe width="400" height="300" src="${lesson.video}" allow="autoplay"></iframe>
+  `;
 
-  await db.collection("questions").add({
-    text,
-    date: new Date()
+  document.getElementById("cbt-section").innerHTML = `
+    <h3>Objective</h3>
+    ${lesson.obj}
+    <h3>Theory</h3>
+    ${lesson.theory}
+  `;
+};
+
+// ================= STUDENT QUESTIONS =================
+window.submitQuestion = async function () {
+  const question = document.getElementById("student-question").value;
+
+  await push(ref(db, "questions"), {
+    question,
+    time: Date.now()
   });
 
   alert("Question submitted");
-}
+};
