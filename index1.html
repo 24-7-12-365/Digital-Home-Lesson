@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>School LMS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>School LMS</h1>
+
+<!-- AUTH SECTION -->
+<div id="auth">
+  <h2>Signup</h2>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  
+  <select id="role">
+    <option value="student">Student</option>
+    <option value="teacher">Teacher</option>
+  </select>
+
+  <input id="class" placeholder="Class">
+  <input id="subjects" placeholder="Subjects (comma separated)">
+  
+  <button onclick="signup()">Signup</button>
+
+  <h2>Login</h2>
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARDS -->
+<div id="adminDashboard" class="hidden">
+  <h2>Admin Dashboard</h2>
+  <div id="pendingUsers"></div>
+</div>
+
+<div id="teacherDashboard" class="hidden">
+  <h2>Teacher Dashboard</h2>
+
+  <select id="teacherSubject"></select>
+  <input id="week" placeholder="Week">
+
+  <textarea id="lessonNote" placeholder="Lesson Note"></textarea>
+  <input id="videoLink" placeholder="Video URL">
+  <input type="file" id="imageUpload">
+
+  <textarea id="objectiveQ" placeholder="Objective Questions JSON"></textarea>
+  <textarea id="theoryQ" placeholder="Theory Questions"></textarea>
+
+  <button onclick="uploadLesson()">Upload Lesson</button>
+</div>
+
+<div id="studentDashboard" class="hidden">
+  <h2>Student Dashboard</h2>
+
+  <select id="studentSubject"></select>
+  <input id="studentWeek" placeholder="Week">
+
+  <button onclick="loadLesson()">Load Lesson</button>
+
+  <div id="lessonDisplay"></div>
+
+  <div id="cbtSection"></div>
+
+  <textarea id="studentQuestion" placeholder="Ask question"></textarea>
+  <button onclick="askQuestion()">Submit Question</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js"></script>
+
+<script src="app.js"></script>
+</body>
+</html>
