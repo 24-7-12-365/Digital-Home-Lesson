@@ -1,31 +1,99 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BODY */
 body {
-  font-family: Arial;
-  padding: 20px;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f6f9;
 }
 
+/* MAIN CONTAINER */
+#auth-section {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* HEADINGS */
+h1 {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* INPUTS */
 input, select, textarea {
-  display: block;
-  margin: 10px 0;
-  width: 300px;
-  padding: 8px;
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
+/* BUTTON */
 button {
-  padding: 10px;
-  background: green;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #007bff;
   color: white;
   border: none;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
 }
 
+button:hover {
+  background: #0056b3;
+}
+
+/* DASHBOARDS */
 .dashboard {
-  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
 }
 
 .hidden {
   display: none;
 }
 
+/* TEXTAREA HEIGHT */
 textarea {
-  height: 100px;
+  min-height: 120px;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 600px) {
+  #auth-section {
+    padding: 20px;
+    border-radius: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
 }
