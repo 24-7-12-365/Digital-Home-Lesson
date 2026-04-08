@@ -3,14 +3,11 @@ body {
   padding: 20px;
 }
 
-.hidden {
-  display: none;
-}
-
-input, textarea, select {
+input, select, textarea {
   display: block;
   margin: 10px 0;
   width: 300px;
+  padding: 8px;
 }
 
 button {
@@ -18,4 +15,17 @@ button {
   background: green;
   color: white;
   border: none;
+  cursor: pointer;
+}
+
+.dashboard {
+  margin-top: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+textarea {
+  height: 100px;
 }
