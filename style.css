@@ -1,0 +1,21 @@
+body {
+  font-family: Arial;
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+input, textarea, select {
+  display: block;
+  margin: 10px 0;
+  width: 300px;
+}
+
+button {
+  padding: 10px;
+  background: green;
+  color: white;
+  border: none;
+}
