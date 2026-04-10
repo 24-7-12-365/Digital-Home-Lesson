@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Home Lesson (Improved)</title>
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f9; }
+header { background:#2c3e50; color:#fff; padding:10px; text-align:center; }
+.container { padding:20px; }
+.card { background:#fff; padding:15px; margin-bottom:15px; border-radius:8px; }
+input, select, textarea, button { width:100%; margin:5px 0; padding:10px; }
+button { background:#2c3e50; color:#fff; border:none; cursor:pointer; }
+.hidden { display:none; }
+.row { display:flex; gap:10px; }
+</style>
+</head>
+<body>
+<header><h2>Digital Home Lesson Platform</h2></header>
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginDiv" class="card">
+<h3>Login</h3>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="adminDiv" class="hidden">
+<h3>Admin Dashboard</h3>
+<div class="card">
+<h4>Register / Edit User</h4>
+<input id="newUser" placeholder="Username">
+<input id="newPass" placeholder="Password">
+<select id="role">
+<option>teacher</option>
+<option>student</option>
+</select>
+<input id="class" placeholder="Class">
+<input id="subjects" placeholder="Subjects (comma separated)">
+<button onclick="registerUser()">Save User</button>
+</div>
+<div class="card">
+<h4>All Users</h4>
+<ul id="userList"></ul>
+</div>
+</div>
+
+<!-- TEACHER DASHBOARD -->
+<div id="teacherDiv" class="hidden">
+<h3>Teacher Dashboard</h3>
+<div class="card">
+<select id="tSubject"></select>
+<select id="tWeek"></select>
+<input id="tClass" placeholder="Class for this lesson (e.g SS1)">
+<textarea id="lessonNote" placeholder="Lesson Note"></textarea>
+<input id="videoLink" placeholder="Video Link">
+<input id="imageLink" placeholder="Image Link">
+
+<h4>CBT Questions</h4>
+<div id="cbtContainer"></div>
+<button onclick="addQuestion()">Add Question</button>
+
+<textarea id="theory" placeholder="Theory Questions"></textarea>
+<button onclick="saveLesson()">Save Lesson</button>
+</div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div id="studentDiv" class="hidden">
+<h3>Student Dashboard</h3>
+<select id="sSubject"></select>
+<select id="sWeek"></select>
+<button onclick="loadLesson()">Load Lesson</button>
+<div class="card" id="lessonDisplay"></div>
+</div>
+
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
